@@ -70,7 +70,6 @@ const AddProductVariant = ({
     <div>
       {saved ? (
         <>
-          <hr className="mb-5" />
           <span className="font-bold mr-2">{optionType}</span>
           {optionValues.map((value, index) => (
             <span

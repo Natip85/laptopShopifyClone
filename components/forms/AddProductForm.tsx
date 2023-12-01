@@ -94,7 +94,7 @@ const AddProductForm = () => {
       try {
         for (const item of data.images) {
           if (item) {
-            const fileName = new Date().getTime() + "-" + item.name;
+            const fileName = new Date().getTime() + "new-" + item.name;
             const storage = getStorage(firebaseApp);
             const storageRef = ref(storage, `products/${fileName}`);
             const uploadTask = uploadBytesResumable(storageRef, item);

@@ -12,7 +12,6 @@ import SelectImage from "../inputs/SelectImage";
 import { Button } from "../ui/button";
 import CustomSelect from "../inputs/CustomSelect";
 import { weightOptions } from "@/lib/utils";
-import AddProductVariant from "./AddProductVariant";
 import firebaseApp from "@/lib/firebase";
 import {
   deleteObject,
@@ -24,6 +23,17 @@ import {
 import toast from "react-hot-toast";
 import axios from "axios";
 import Image from "next/image";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { FaRegTrashCan } from "react-icons/fa6";
+import { variantOptions } from "@/lib/utils";
+
 interface EditVariantFormProps {
   product: Product;
 }
@@ -36,6 +46,9 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
   const [shipping, setShipping] = useState(product.shipping);
   const [shippingCheckbox, setShippingCheckbox] = useState(product.shipping);
   const [addVariantCheckbox, setAddVariantCheckbox] = useState(false);
+  const [optionType, setOptionType] = useState("");
+  const [optionValues, setOptionValues] = useState<string[]>([""]);
+  const [saved, setSaved] = useState(false);
 
   const id = pathname?.split("/").pop() || "";
 
@@ -67,6 +80,42 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
   const addImageToState = useCallback((value: string[]) => {
     setImages(value);
   }, []);
+
+  const handleOptionTypeChange = (value: string) => {
+    setOptionType(value);
+  };
+
+  const handleOptionValueChange =
+    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValues = [...optionValues];
+      newValues[index] = e.target.value;
+      setOptionValues(newValues);
+
+      if (index === newValues.length - 1 && e.target.value.length >= 2) {
+        setOptionValues([...newValues, ""]);
+      }
+    };
+
+  const removeOptionValue = (index: number) => {
+    const newValues = [...optionValues];
+    newValues.splice(index, 1);
+    setOptionValues(newValues);
+  };
+
+  const handleSave = () => {
+    const lastFieldFilled = optionValues[optionValues.length - 1].length > 0;
+
+    if (!optionType) {
+      alert(`Option type is required.`);
+      return;
+    }
+
+    if (!lastFieldFilled) {
+      alert(`Please choose additional product ${optionType} value.`);
+    } else {
+      setSaved(true);
+    }
+  };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
@@ -170,6 +219,63 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
         setIsLoading(false);
       });
   };
+
+  const handleDelete = async () => {
+    toast("Deleting product, please wait.");
+ const varProduct = product.variants[parseInt(id)].images;
+    console.log("VARPROD>>", varProduct);
+  try {
+      for (const item of varProduct) {
+        if (item.image) {
+              const storage = getStorage(firebaseApp);
+
+          const imageRef = ref(storage, item.image);
+          await deleteObject(imageRef);
+          console.log("image deleted", item.image);
+        }
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+    
+    const varProducts = product.variants.map((item, index) => {
+      return item;
+    });
+    const myArray = varProducts.filter(
+      (item) => item.variantID !== parseInt(id)
+    );
+    console.log(myArray);
+
+    const updatedVariants = myArray.map((variant, index) => ({
+  ...variant,
+  variantID: index,
+}));
+    product.variants = updatedVariants;
+    console.log("FINALPROD>>>",product);
+
+   
+    
+
+
+  
+
+
+   axios
+      .put("/api/product", product)
+      .then(() => {
+        toast.success("Product variant edited");
+       
+      })
+      .catch((error) => {
+        console.log("Error updating product variant", error);
+
+        toast.error("Something went wrong when editing the product variant");
+      })
+      .finally(() => {
+        setIsLoading(false);
+         router.refresh();
+      });
+  };
   return (
     <>
       <div className="flex items-center font-bold mb-5 ">
@@ -240,34 +346,126 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
             />
 
             {addVariantCheckbox ? (
-              <AddProductVariant closeVariants={() => {}} variant={() => {}} />
+              <>
+                {saved ? (
+                  <>
+                    <span className="font-bold mr-2">{optionType}</span>
+                    {optionValues.map((value, index) => (
+                      <span
+                        key={index}
+                        className={`${
+                          value
+                            ? "w-fit mt-2 bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300"
+                            : ""
+                        }`}
+                      >
+                        {value}
+                      </span>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <label
+                      htmlFor="optionType"
+                      className="text-xs text-slate-800 cursor-pointer mb-3"
+                    >
+                      New option Type
+                    </label>
+
+                    <div className="flex justify-between mb-3">
+                      <Select
+                        value={optionType}
+                        onValueChange={handleOptionTypeChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a variant" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {variantOptions.map((item, index) => (
+                              <SelectItem key={index} value={item}>
+                                {item}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+
+                      <button
+                        onClick={() =>
+                          setAddVariantCheckbox(!addVariantCheckbox)
+                        }
+                      >
+                        <FaRegTrashCan
+                          style={{ color: "red", marginLeft: 15 }}
+                        />
+                      </button>
+                    </div>
+                    <label
+                      htmlFor="optionValue"
+                      className="text-xs text-slate-800 cursor-pointer"
+                    >
+                      Option Value
+                    </label>
+                    {optionValues.map((value, index) => (
+                      <div key={index} className="flex justify-between">
+                        <Input
+                          id={`optionValue-${index}`}
+                          value={value}
+                          onChange={handleOptionValueChange(index)}
+                          className="my-2 rounded-md text-sm hover:bg-slate-100 bg-white"
+                        />
+                        {index > 0 && (
+                          <button onClick={() => removeOptionValue(index)}>
+                            <FaRegTrashCan
+                              style={{ color: "red", marginLeft: 15 }}
+                            />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+
+                    <Button
+                      onClick={handleSave}
+                      className="my-2 w-fit h-fit text-sm text-white py-1 px-3 bg-black rounded-lg"
+                    >
+                      Save
+                    </Button>
+                  </>
+                )}
+              </>
             ) : (
               <div>
                 <button
                   onClick={() => {
                     setAddVariantCheckbox(true);
                   }}
-                  className="w-fit bg-transparent text-sky-700 text-sm hover:underline hover:text-sky-900"
+                  className="my-5 w-fit bg-transparent text-sky-700 text-sm hover:underline hover:text-sky-900"
                 >
                   + Add more product options
                 </button>
               </div>
             )}
-{product.variants[parseInt(id)]?.images.map((item, index)=>(
- <div key={index} className="w-[50px] h-[55px] relative mr-3">
-                      <Image
-                        src={
-                          item?.image ||
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0jO6VB6deX0RjnlXlOPaZJT07OdYkrqdCKQ&usqp=CAU"
-                        }
-                        alt="prod img"
-                        priority
-                        fill
-                        sizes="20"
-                        className="object-fit w-[100%]"
-                      />
-                    </div>
-))}
+            <div className="flex my-5">
+              {product.variants[parseInt(id)]?.images.map((item, index) => (
+                <div
+                  key={index}
+                  className="w-[50px] h-[55px] mr-3 border border-slate-300 rounded-md object-fit overflow-hidden relative aspect-square"
+                >
+                  <Image
+                    src={
+                      item?.image ||
+                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0jO6VB6deX0RjnlXlOPaZJT07OdYkrqdCKQ&usqp=CAU"
+                    }
+                    alt="prod img"
+                    priority
+                    fill
+                    sizes="20"
+                    className="object-fit w-[100%]"
+                  />
+                </div>
+              ))}
+            </div>
             <SelectImage handleFileChange={addImageToState} />
           </div>
           <div className="bg-white p-3 rounded-md flex flex-col w-full shadow-lg mb-5 border border-stone-300">
@@ -352,8 +550,7 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
           title="Discard all unsaved changes?"
           description="If you discard changes, you’ll delete any edits you made since you last saved."
           onConfirm={() => {
-            // handleDelete(product.id, product.images);
-            // router.push("/products");
+            handleDelete();
           }}
           btnClasses="mr-2 h-fit text-xs text-white py-1 px-3 bg-red-500 rounded-md"
           triggerTitle="Delete variant"

@@ -17,7 +17,9 @@ const Products = async () => {
           Add product
         </Link>
       </div>
+      <div>
       <ProductTable columns={columns} data={allProducts} />
+      </div>
     </>
   );
 };
