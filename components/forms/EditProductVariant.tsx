@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FaRegTrashCan } from "react-icons/fa6";
-import { v4 as uuidv4 } from "uuid";
 import {
   Select,
   SelectContent,
@@ -14,79 +13,55 @@ import {
 import { variantOptions } from "@/lib/utils";
 
 interface AddProductVariantProps {
-  variant: (variant1: any[]) => void;
+  variant: (variant1: any) => void;
   closeVariants: () => void;
-  product?:any
+  product?: any;
 }
 
-const AddProductVariant = ({
+const EditProductVariant = ({
   product,
   variant,
   closeVariants,
 }: AddProductVariantProps) => {
   const [optionType, setOptionType] = useState("");
-  const [optionValues, setOptionValues] = useState<string[]>([""]);
+  const [optionValues, setOptionValues] = useState("");
   const [saved, setSaved] = useState(false);
 
   const handleOptionTypeChange = (value: string) => {
     setOptionType(value);
   };
-  const handleOptionValueChange =
-    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValues = [...optionValues];
-      newValues[index] = e.target.value;
-      setOptionValues(newValues);
-
-      if (index === newValues.length - 1 && e.target.value.length >= 2) {
-        setOptionValues([...newValues, ""]);
-      }
-    };
-
-  const removeOptionValue = (index: number) => {
-    const newValues = [...optionValues];
-    newValues.splice(index, 1);
-    setOptionValues(newValues);
-  };
 
   const handleSave = () => {
-    const lastFieldFilled = optionValues[optionValues.length - 1].length > 0;
 
     if (!optionType) {
       alert(`Option type is required.`);
       return;
     }
-
-    if (lastFieldFilled) {
-      setSaved(true);
-    } else {
-      alert(`Please choose additional product ${optionType} value.`);
+    if (!optionValues) {
+      alert(`Option value is required.`);
+      return;
     }
-  
-    const optionTypeObjects = optionValues.map((item, index) => ({
-      [optionType]: item,
-      variantID: index,
-    }));
 
-    // const finalObject = [...product.variants, optionTypeObjects]
+    const optionTypeObjects = {
+        ...product,
+      [optionType]: optionValues,
+      variantID:product.variantID
+    };
+
     variant(optionTypeObjects);
+    setSaved(true)
   };
   return (
     <div>
       {saved ? (
         <>
           <span className="font-bold mr-2">{optionType}</span>
-          {optionValues.map((value, index) => (
-            <span
-              key={index}
-              className={`${
-                value
-                  ? "bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300"
-                  : ""
-              }`}
-            >
-              {value}
-            </span>
-          ))}
+
+          <span
+            className={`${"bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300"}`}
+          >
+            {optionValues}
+          </span>
         </>
       ) : (
         <>
@@ -124,22 +99,14 @@ const AddProductVariant = ({
           >
             Option Value
           </label>
-          {optionValues.map((value, index) => (
-            <div key={index} className="flex justify-between">
+            <div className="flex justify-between">
               <Input
-                id={`optionValue-${index}`}
-                value={value}
-                onChange={handleOptionValueChange(index)}
+                id={`optionValue`}
+                value={optionValues}
+                onChange={(e)=>setOptionValues(e.target.value)}
                 className="my-2 rounded-md text-sm hover:bg-slate-100 bg-white"
               />
-              {index > 0 && (
-                <button onClick={() => removeOptionValue(index)}>
-                  <FaRegTrashCan style={{ color: "red", marginLeft: 15 }} />
-                </button>
-              )}
             </div>
-          ))}
-
           <Button
             onClick={handleSave}
             className="my-2 h-fit text-sm text-white py-1 px-3 bg-black rounded-lg"
@@ -152,4 +119,4 @@ const AddProductVariant = ({
   );
 };
 
-export default AddProductVariant;
+export default EditProductVariant;

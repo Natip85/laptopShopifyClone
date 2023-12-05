@@ -19,8 +19,8 @@ model User {
   role           Role      @default(USER)
 
   accounts Account[]
-  orders Order[]
-  reviews Review[]
+  orders   Order[]
+  reviews  Review[]
 }
 
 model Account {
@@ -43,49 +43,50 @@ model Account {
 }
 
 model Product {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String?
-  price       Float?
-  weight      String?
-  shipping    Boolean?
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  title             String
+  description       String?
+  price             Float?
+  weight            String?
+  shipping          Boolean?
   weightMeasurement String?
-  productStatus String
-  category    String?
-  quantity Int
-  sku         String
-  images      Image[]
-  variants    Variant[]
-  createdDate     DateTime  @default(now())
+  productStatus     String
+  category          String?
+  quantity          Int
+  sku               String
+  tags              String[]
+  images            Image[]
+  variants          Variant[]
+  createdDate       DateTime  @default(now())
 
   reviews Review[]
 }
 
 model Order {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String        @db.ObjectId
   amount          Float
   currency        String
   status          String
-  deliveryStatus String?
-  createdDate     DateTime  @default(now())
-  paymentIntentID String?   @unique
-  products CartProduct[]
-  address Address?
+  deliveryStatus  String?
+  createdDate     DateTime      @default(now())
+  paymentIntentID String?       @unique
+  products        CartProduct[]
+  address         Address?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model Review{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId
-  productId String @db.ObjectId
-  rating Int
-  comment String
-  createdDate     DateTime  @default(now())
+model Review {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  productId   String   @db.ObjectId
+  rating      Int
+  comment     String
+  createdDate DateTime @default(now())
 
   product Product @relation(fields: [productId], references: [id])
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
@@ -94,44 +95,44 @@ enum Role {
 }
 
 type Variant {
-  variantID       Int?
-  color String?
-  size String?
-  material String?
-  style String?
-  title       String?
-  description String?
-  price       Float?
-  weight      String?
+  variantID         Int?
+  name              String?
+  images            Image[]
+  size              String?
+  color             String?
+  material          String?
+  style             String?
+  description       String?
+  price             Float?
+  weight            String?
   weightMeasurement String?
-  productStatus String?
-  quantity Int?
-  sku         String?
-  images      Image[]
+  productStatus     String?
+  category          String?
+  quantity          Int?
+  sku               String?
 }
 
-
-type Image{
+type Image {
   image String?
-  path String?
+  path  String?
 }
 
-type Address{
-  city String?
-  country String
-  line1 String
-  line2 String?
+type Address {
+  city        String?
+  country     String
+  line1       String
+  line2       String?
   postal_code String
-  state String
+  state       String
 }
 
-type CartProduct{
-  id String
-  name String
-  description String
-  category String
+type CartProduct {
+  id            String
+  name          String
+  description   String
+  category      String
   // brand String
-  quantity Int
-  price Float
+  quantity      Int
+  price         Float
   selectedImage Image
 }

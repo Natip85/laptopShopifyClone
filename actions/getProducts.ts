@@ -2,7 +2,7 @@ import prisma from "@/lib/prismadb";
 
 export default async function getProducts() {
   try {
-    const products = await prisma.product.findMany({});
+    const products = await prisma.product.findMany();
 
     return products;
   } catch (error: any) {

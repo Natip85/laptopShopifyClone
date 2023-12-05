@@ -24,7 +24,7 @@ import Modal from "../Modal";
 import { Product } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import AddProductVariant from "./AddProductVariant";
+import EditProductAddVariant from "./EditProductAddVariant";
 
 export interface EditProductFormProps {
   product: Product;
@@ -40,7 +40,7 @@ const EditProductForm = ({ product }: EditProductFormProps) => {
   const [variantComponents, setVariantComponents] = useState(
     [] as JSX.Element[]
   );
-  const [variant, setVariant] = useState<any[] | null>(null);
+  const [variant, setVariant] = useState({});
 
   const {
     register,
@@ -75,8 +75,12 @@ const EditProductForm = ({ product }: EditProductFormProps) => {
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
     let uploadedImages: any[] = [];
+    
+const isEmpty = Object.keys(variant).length === 0;
 
-    const newProductData = { ...data, images: newImages, variants: variant };
+const newVariants = isEmpty ? [...product.variants] : [...product.variants, variant];
+
+    const newProductData = { ...data, images: newImages, variants: newVariants };
     if (images.length > 0) {
       const handleImageUploads = async () => {
         toast("Editing product. This might take a while...", {
@@ -146,7 +150,7 @@ const EditProductForm = ({ product }: EditProductFormProps) => {
       .put("/api/product", editedProductData)
       .then(() => {
         toast.success("Product edited");
-        router.push("/products");
+        setAddVariantCheckbox(false)
         router.refresh();
       })
       .catch((error) => {
@@ -188,10 +192,11 @@ const EditProductForm = ({ product }: EditProductFormProps) => {
   const addVariantComponent = () => {
     setVariantComponents((prev) => [
       ...prev,
-      <AddProductVariant
+      <EditProductAddVariant
         key={prev.length}
         closeVariants={handleOptionSelectorHide}
         variant={handleAddVariant}
+        product={product}
       />,
     ]);
   };
@@ -321,18 +326,25 @@ const EditProductForm = ({ product }: EditProductFormProps) => {
           </div>
           <div className="bg-white p-3 rounded-md  w-full shadow-lg mb-5 border border-stone-300">
             <span className="text-sm mb-5 text-black">Variants</span>
-            {product.variants.length > 0 ? (
+             <hr className="my-5"/> 
+              {addVariantCheckbox ? (
+                  <>{variantComponents}</>
+                ) : (
+                  <div>
+                    <button
+                      onClick={() => {
+                        setAddVariantCheckbox(true);
+                        addVariantComponent();
+                      }}
+                      className="w-fit bg-transparent text-sky-700 text-sm hover:underline hover:text-sky-900"
+                    >
+                      + Add options like size or color
+                    </button>
+                  </div>
+                )}
+            {product.variants.length > 0 && (
               <>
-                <div className="flex gap-3">
-                  {product.variants.map((item, index) => (
-                    <div key={index} className="my-5">
-                      <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
-                        {item.color || item.material || item.size || item.style}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <hr />
+                <hr className="mt-5"/> 
                 <ul>
                   {product.variants.map((item, index) => (
                     <Link
@@ -356,10 +368,7 @@ const EditProductForm = ({ product }: EditProductFormProps) => {
                               />
                             </div>
                             <div>
-                              {item.color ||
-                                item.material ||
-                                item.style ||
-                                item.size}
+                             {item.color !== null ? "Color: "+item.color: ""} {`${item.size !== null ? "Size: "+ item.size: ""}`} {`${item.material !== null ? "Material: "+ item.material: ""}`} {`${item.style !== null ? "Style: "+ item.style: ""}`}
                             </div>
                           </div>
                           <div className="flex flex-col">
@@ -373,25 +382,8 @@ const EditProductForm = ({ product }: EditProductFormProps) => {
                   ))}
                 </ul>
               </>
-            ) : (
-              <>
-                {addVariantCheckbox ? (
-                  <>{variantComponents}</>
-                ) : (
-                  <div>
-                    <button
-                      onClick={() => {
-                        setAddVariantCheckbox(true);
-                        addVariantComponent();
-                      }}
-                      className="w-fit bg-transparent text-sky-700 text-sm hover:underline hover:text-sky-900"
-                    >
-                      + Add options like size or color
-                    </button>
-                  </div>
-                )}
-              </>
             )}
+             
           </div>
         </div>
         <div className="sm:ml-0 md:mt-0 min-w-[30%]">
