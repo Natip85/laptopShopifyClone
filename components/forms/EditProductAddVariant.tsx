@@ -65,7 +65,7 @@ const newId = product.variants.length
           </span>
         </>
       ) : (
-        <>
+        <div className="rounded-lg border p-3">
           <label
             htmlFor="optionType"
             className="text-xs text-slate-800 cursor-pointer"
@@ -75,7 +75,7 @@ const newId = product.variants.length
 
           <div className="flex justify-between">
             <Select value={optionType} onValueChange={handleOptionTypeChange}>
-              <SelectTrigger>
+              <SelectTrigger className="w-[90%]">
                 <SelectValue placeholder="Select a variant" />
               </SelectTrigger>
               <SelectContent>
@@ -105,7 +105,7 @@ const newId = product.variants.length
                 id={`optionValue`}
                 value={optionValues}
                 onChange={(e)=>setOptionValues(e.target.value)}
-                className="my-2 rounded-md text-sm hover:bg-slate-100 bg-white"
+                className="my-2 rounded-md text-sm hover:bg-slate-100 bg-white w-[90%]"
               />
             </div>
           <Button
@@ -114,7 +114,7 @@ const newId = product.variants.length
           >
             Save
           </Button>
-        </>
+        </div>
       )}
     </div>
   );

@@ -251,8 +251,8 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
         Edit variant
       </div>
       <div className="flex flex-col md:flex-row md:justify-between">
-        <div className="w-full md:w-[30%]">
-        <div className="bg-white p-3 rounded-md h-fit shadow-lg mb-5 mr-5 border border-stone-300">
+        <div className="w-full md:w-[30%] mr-5">
+        <div className="bg-white p-3 rounded-md w-full h-fit shadow-lg mb-5 mr-5 border border-stone-300">
          <div className="flex flex-row">
             <div className="w-[80px] h-[85px] relative mr-3">
             <Image
@@ -286,7 +286,7 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
 </div>
         </div>
 
-        <div className="bg-white p-3 rounded-md flex flex-col  h-fit shadow-lg mb-5 mr-5 border border-stone-300">
+        <div className="bg-white p-3 rounded-md flex flex-col w-full  h-fit shadow-lg mb-5 mr-5 border border-stone-300">
           <span className="mb-3">Variants</span>
           <ul>
             {product.variants.map((item, index) => (
@@ -312,7 +312,7 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
                         className="object-fit w-[100%]"
                       />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex gap-2">
                       <div> {item.color !== null ? item.color : ""}</div>
                       <div> {`${item.size !== null ? item.size : ""}`}</div>
                       <div>{`${
@@ -329,7 +329,7 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
         </div>
         <div className="w-full md:w-[70%] ">
           <div className="bg-white p-3 rounded-md flex flex-col w-full shadow-lg mb-5 border border-stone-300">
-            <span className="text-sm text-black cursor-pointer">
+            <span className="text-sm text-black">
               Variant options
             </span>
             <hr className="my-5" />
@@ -367,7 +367,7 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
                 </span>
               )}
             </div>
-            <hr className="mb-3" />
+            <hr className="mb-5" />
             {addVariantCheckbox ? (
               <>{variantComponents}</>
             ) : (

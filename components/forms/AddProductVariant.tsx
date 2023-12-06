@@ -67,7 +67,6 @@ const AddProductVariant = ({
       variantID: index,
     }));
 
-    // const finalObject = [...product.variants, optionTypeObjects]
     variant(optionTypeObjects);
   };
   return (
@@ -89,7 +88,7 @@ const AddProductVariant = ({
           ))}
         </>
       ) : (
-        <>
+        <div className="rounded-lg border p-3">
           <label
             htmlFor="optionType"
             className="text-xs text-slate-800 cursor-pointer"
@@ -99,7 +98,7 @@ const AddProductVariant = ({
 
           <div className="flex justify-between">
             <Select value={optionType} onValueChange={handleOptionTypeChange}>
-              <SelectTrigger>
+              <SelectTrigger className="w-[90%]">
                 <SelectValue placeholder="Select a variant" />
               </SelectTrigger>
               <SelectContent>
@@ -130,7 +129,7 @@ const AddProductVariant = ({
                 id={`optionValue-${index}`}
                 value={value}
                 onChange={handleOptionValueChange(index)}
-                className="my-2 rounded-md text-sm hover:bg-slate-100 bg-white"
+                className="my-2 rounded-md text-sm hover:bg-slate-100 bg-white w-[90%]"
               />
               {index > 0 && (
                 <button onClick={() => removeOptionValue(index)}>
@@ -146,7 +145,7 @@ const AddProductVariant = ({
           >
             Save
           </Button>
-        </>
+        </div>
       )}
     </div>
   );

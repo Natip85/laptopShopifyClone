@@ -368,12 +368,12 @@ const newVariants = isEmpty ? [...product.variants] : [...product.variants, vari
                               />
                             </div>
                             <div>
-                             {item.color !== null ? "Color: "+item.color: ""} {`${item.size !== null ? "Size: "+ item.size: ""}`} {`${item.material !== null ? "Material: "+ item.material: ""}`} {`${item.style !== null ? "Style: "+ item.style: ""}`}
+                             {item.color !== null ? item.color: ""} {`${item.size !== null ?  item.size: ""}`} {`${item.material !== null ? item.material: ""}`} {`${item.style !== null ?  item.style: ""}`}
                             </div>
                           </div>
                           <div className="flex flex-col">
-                            <span>${item.price || "0"}</span>
-                            <span>{item.quantity || "0"} available</span>
+                            <span className="text-sm m-auto">${item.price || "0"}</span>
+                            <span className="text-xs">{item.quantity || "0"} available</span>
                           </div>
                         </div>
                         <hr />

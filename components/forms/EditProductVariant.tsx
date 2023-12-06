@@ -64,7 +64,7 @@ const EditProductVariant = ({
           </span>
         </>
       ) : (
-        <div>
+        <div className="rounded-lg border p-3">
           <label
             htmlFor="optionType"
             className="text-xs text-slate-800 cursor-pointer"
@@ -73,8 +73,8 @@ const EditProductVariant = ({
           </label>
 
           <div className="flex justify-between my-3">
-            <Select value={optionType} onValueChange={handleOptionTypeChange}>
-              <SelectTrigger>
+            <Select  value={optionType} onValueChange={handleOptionTypeChange}>
+              <SelectTrigger className="w-[90%]">
                 <SelectValue placeholder="Select a variant" />
               </SelectTrigger>
               <SelectContent>
@@ -89,7 +89,7 @@ const EditProductVariant = ({
             </Select>
 
             <button onClick={closeVariants}>
-              <FaRegTrashCan style={{ color: "red", marginLeft: 15 }} />
+              <FaRegTrashCan style={{ color: "red", marginLeft: 15, marginRight:15 }} />
             </button>
           </div>
 
@@ -104,7 +104,7 @@ const EditProductVariant = ({
                 id={`optionValue`}
                 value={optionValues}
                 onChange={(e)=>setOptionValues(e.target.value)}
-                className="my-2 rounded-md text-sm hover:bg-slate-100 bg-white"
+                className="my-2 rounded-md text-sm hover:bg-slate-100 bg-white w-[90%]"
               />
             </div>
           <Button
