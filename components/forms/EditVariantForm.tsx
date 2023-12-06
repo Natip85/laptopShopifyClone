@@ -92,7 +92,6 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
   }, []);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-
     setIsLoading(true);
     let uploadedImages: any[] = [];
 
@@ -252,7 +251,42 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
         Edit variant
       </div>
       <div className="flex flex-col md:flex-row md:justify-between">
-        <div className="bg-white p-3 rounded-md flex flex-col w-full md:w-[30%] h-fit shadow-lg mb-5 mr-5 border border-stone-300">
+        <div className="w-full md:w-[30%]">
+        <div className="bg-white p-3 rounded-md h-fit shadow-lg mb-5 mr-5 border border-stone-300">
+         <div className="flex flex-row">
+            <div className="w-[80px] h-[85px] relative mr-3">
+            <Image
+              src={
+                product.images[0].image ||
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0jO6VB6deX0RjnlXlOPaZJT07OdYkrqdCKQ&usqp=CAU"
+              }
+              alt="prod img"
+              priority
+              fill
+              sizes="20"
+              className="object-fit w-[100%]"
+            />
+          </div>
+          <div>
+            {product.title}{" "}
+            <span
+              className={`inline-flex items-center rounded-md  px-1 py-0 text-xs font-medium  ring-1 ring-inset 
+        ${
+          product.productStatus === "active"
+            ? "bg-green-200 text-green-700 ring-green-600/20"
+            : "bg-red-50 text-red-700 ring-red-600/10"
+        }
+        `}
+            >
+              {product.productStatus}
+            </span>
+            <div className="text-xs mt-2 text-slate-800">{product.variants.length} variants</div>
+          </div>
+        
+</div>
+        </div>
+
+        <div className="bg-white p-3 rounded-md flex flex-col  h-fit shadow-lg mb-5 mr-5 border border-stone-300">
           <span className="mb-3">Variants</span>
           <ul>
             {product.variants.map((item, index) => (
@@ -265,7 +299,7 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
                   className="hover:bg-slate-100 cursor-pointer p-2"
                 >
                   <div className="flex items-center">
-                    <div className="w-[50px] h-[55px] relative mr-3">
+                    <div className="w-[40px] h-[45px] relative mr-3">
                       <Image
                         src={
                           item.images[0]?.image ||
@@ -278,11 +312,13 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
                         className="object-fit w-[100%]"
                       />
                     </div>
-                    <div>
-                      {item.color !== null ? item.color : ""}
-                      {`${item.size !== null ? item.size : ""}`}
-                      {`${item.material !== null ? item.material : ""}`}
-                      {`${item.style !== null ? item.style : ""}`}
+                    <div className="flex flex-col">
+                      <div> {item.color !== null ? item.color : ""}</div>
+                      <div> {`${item.size !== null ? item.size : ""}`}</div>
+                      <div>{`${
+                        item.material !== null ? item.material : ""
+                      }`}</div>
+                      <div>{`${item.style !== null ? item.style : ""}`}</div>
                     </div>
                   </div>
                 </li>
@@ -290,17 +326,18 @@ const EditVariantForm = ({ product }: EditVariantFormProps) => {
             ))}
           </ul>
         </div>
+        </div>
         <div className="w-full md:w-[70%] ">
           <div className="bg-white p-3 rounded-md flex flex-col w-full shadow-lg mb-5 border border-stone-300">
             <span className="text-sm text-black cursor-pointer">
               Variant options
             </span>
             <hr className="my-5" />
-            <div className="mb-5">
+            <div className="mb-5 flex flex-col gap-2">
               {variantProd?.color && (
                 <span>
                   Color:{" "}
-                  <span className="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+                  <span className={`bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300`}>
                     {variantProd?.color}
                   </span>
                 </span>

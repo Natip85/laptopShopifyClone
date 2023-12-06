@@ -64,15 +64,15 @@ const EditProductVariant = ({
           </span>
         </>
       ) : (
-        <>
+        <div>
           <label
             htmlFor="optionType"
             className="text-xs text-slate-800 cursor-pointer"
           >
-            Option Type
+            New option Type
           </label>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between my-3">
             <Select value={optionType} onValueChange={handleOptionTypeChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a variant" />
@@ -113,7 +113,7 @@ const EditProductVariant = ({
           >
             Save
           </Button>
-        </>
+        </div>
       )}
     </div>
   );
