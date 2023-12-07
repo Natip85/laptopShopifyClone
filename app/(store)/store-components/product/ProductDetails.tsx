@@ -2,14 +2,15 @@
 
 import { Rating } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
-// import SetColor from "./SetColor";
 import { MdCheckCircle } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import Button from "@/components/buttons/Button";
 import Image from "next/image";
 import { useCart } from "@/hooks/useCart";
 import SetQuantity from "./SetQuantity";
-import { Product } from "@prisma/client";
+import SetVariant from "./SetVariant";
+import ProductImage from "./ProductImage";
+import ImageSlider from "@/components/ImageSlider";
 
 interface ProductDetailsProps {
   product: any;
@@ -24,7 +25,7 @@ export type CartProductType = {
   selectedImg: any;
   quantity: number;
   price: number;
-  variants?: any[]
+  variants?: any[];
 };
 
 const Horizontal = () => {
@@ -46,9 +47,10 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
     variants: product.variants,
   });
   const [isProductInCart, setIsProductInCart] = useState(false);
-console.log("PRODUCT>>>", product);
-console.log("CART-PRODUCT>>>", cartProduct);
-console.log("CART-PRODUCTSSSS>>>", cartProducts);
+  console.log("PRODUCT>>>", product);
+  console.log("CART-PRODUCT>>>", cartProduct);
+  console.log("CART-PRODUCTSSSS>>>", cartProducts);
+  console.log("PRODVAR>>", product.variants);
 
   const productRating =
     product.reviews.reduce((acc: number, item: any) => item.rating + acc, 0) /
@@ -66,10 +68,12 @@ console.log("CART-PRODUCTSSSS>>>", cartProducts);
     }
   }, [cartProducts]);
 
-  const handleColorSelect = useCallback(
+  const handleVariantSelect = useCallback(
     (value: any) => {
+      console.log("VARIANT-VALUE>>>", value);
+      const newVariant = value.images[0];
       setCartProduct((prev) => {
-        return { ...prev, selectedImg: value };
+        return { ...prev, selectedImg: newVariant };
       });
     },
     [cartProduct.selectedImg]
@@ -93,43 +97,15 @@ console.log("CART-PRODUCTSSSS>>>", cartProducts);
     });
   }, [cartProduct]);
 
+
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 ">
-      <div className="grid grid-cols-6 gap-2 max-h-[500px] min-h-[300px] sm:min-h-[400px]">
-        <div className="flex flex-col items-center justify-center gap-4 cursor-pointer border h-full max-h-[500px] min-h-[300px] sm:min-h-[400px]">
-          {product.images.map((image: any, index: any) => (
-            <div
-              onClick={() => handleColorSelect(image)}
-              key={index}
-              className={`relative w-[80%] aspect-square rounded border-teal-300 ${
-                cartProduct.selectedImg.color === image.color
-                  ? "border-[1.5px]"
-                  : "border-none"
-              }`}
-            >
-              <Image
-                src={image.image}
-                alt={image.color || "prod color"}
-                fill
-                priority
-                sizes="20"
-                className="object-contain"
-              />
-            </div>
-          ))}
-        </div>
-
-        <div className="col-span-5 relative aspect-square">
-          <Image
-            fill
-            priority
-            sizes="20"
-            src={cartProduct.selectedImg.image}
-            alt={cartProduct.title || "product image"}
-            className="w-full h-full object-contain max-h-[500px] min-h-[300px] sm:min-h-[400px]"
-          />
-        </div>
-      </div>
+      <ProductImage
+        cartProduct={cartProduct}
+        product={product}
+        handleColorSelect={handleVariantSelect}
+      />
       <div className="flex flex-col gap-1 text-slate-500 text-sm">
         <h2 className="text-3xl font-medium text-slate-700">{product.title}</h2>
         <div className="flex items-center gap-2">
@@ -165,12 +141,11 @@ console.log("CART-PRODUCTSSSS>>>", cartProducts);
           </>
         ) : (
           <>
-            {/* <SetColor
+            <SetVariant
               cartProduct={cartProduct}
-              images={product.images}
-              handleColorSelect={handleColorSelect}
-            /> */}
-            setcolor
+              variants={product.variants}
+              handleVariantSelect={handleVariantSelect}
+            />
             <Horizontal />
             <SetQuantity
               cartProduct={cartProduct}
@@ -188,6 +163,11 @@ console.log("CART-PRODUCTSSSS>>>", cartProducts);
             </div>
           </>
         )}
+      </div>
+      <div>variants</div>
+      <div>
+      <ImageSlider/>
+
       </div>
     </div>
   );

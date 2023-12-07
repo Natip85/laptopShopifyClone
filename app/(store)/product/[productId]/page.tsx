@@ -19,7 +19,6 @@ const Product = async ({ params }: { params: IParams }) => {
     <div className="p-8">
      
         <ProductDetails product={product} />
-        <div>variants</div>
         <div className="flex flex-col mt-20 gap-4">
           <AddRating product={product} user={user} />
           
